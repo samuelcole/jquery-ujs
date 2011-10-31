@@ -75,6 +75,10 @@
     // Link onClick disable selector with possible reenable after remote submission
     linkDisableSelector: 'a[data-disable-with]',
 
+    // Callback to be run before submit, can cancel the submit by returning
+    // false, accepts a callback to be run if the function is asynchronous
+    beforeSubmit: function (callback) { return true; },
+
     // Make sure that every Ajax request sends the CSRF token
     CSRFProtection: function (xhr) {
       var token = $('meta[name="csrf-token"]').attr('content');
@@ -180,7 +184,11 @@
       if (target) { form.attr('target', target); }
 
       form.hide().append(metadata_input).appendTo('body');
-      form.submit();
+      if (beforeSubmit(function () {
+        form.submit();
+        }) {
+        form.submit();
+      }
     },
 
     /* Disables form elements:
